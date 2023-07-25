@@ -7,10 +7,17 @@ async function main() {
     token: process.env.GITHUB_ACCESS_TOKEN,
   });
 
-  const spotifyApi = new SpotifyWebApi();
-  spotifyApi.setAccessToken(process.env.SPOTIFY_ACCESS_TOKEN);
-  const result = await spotifyApi.getMyCurrentPlaybackState();
+  const spotifyApi = new SpotifyWebApi({
+    clientId: process.env.SPOTIFY_CLIENT_ID,
+    clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+  });
 
+  spotifyApi.setRefreshToken(process.env.SPOTIFY_REFRESH_TOKEN);
+
+  const auth = await spotifyApi.refreshAccessToken();
+  spotifyApi.setAccessToken(auth.body['access_token']);
+
+  const result = await spotifyApi.getMyCurrentPlaybackState();
   const song = result.body.item.name;
   const artist = result.body.item.artists[0].name;
 
