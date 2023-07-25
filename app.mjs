@@ -18,6 +18,12 @@ async function main() {
   spotifyApi.setAccessToken(auth.body['access_token']);
 
   const result = await spotifyApi.getMyCurrentPlaybackState();
+
+  if (!result.body?.is_playing) {
+    await profileStatus.clear();
+    return;
+  }
+
   const song = result.body.item.name;
   const artist = result.body.item.artists[0].name;
 
